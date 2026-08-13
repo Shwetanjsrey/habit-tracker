@@ -15,7 +15,11 @@ class Settings(BaseSettings):
     app_name: str = "Habit Tracker"
     debug: bool = False
     database_url: str = "sqlite:///./habits.db"
-    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:5174"]
+    cors_origins: list[str] = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://habit-tracker-six-rosy.vercel.app",
+]
 
 
 @lru_cache
