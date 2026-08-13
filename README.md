@@ -1,18 +1,165 @@
 # Habit Tracker
 
-> **Workshop participants:** For the template and starting point, switch to the [`workshop`](https://github.com/coleam00/habit-tracker/tree/workshop) branch.
+A full-stack habit tracking web application for building consistent daily habits through streak tracking, completion statistics, calendar visualization, and analytics.
 
-A personal habit tracking web application for building and maintaining daily habits through streak tracking, completion rates, and calendar visualization. Built with FastAPI (Python) backend and React frontend, this local-first application runs entirely on your machine with no account required—just simple, distraction-free habit tracking.
+Built with **FastAPI**, **React**, **SQLAlchemy**, and **SQLite**, the application provides a simple interface for creating habits, recording completions, monitoring streaks, and analyzing progress over time.
 
-## Prerequisites
+## Features
 
-- **Python 3.11+** with [uv](https://github.com/astral-sh/uv) package manager
-- **Node.js 18+** with npm
-- **Git** (optional, for cloning)
+* **Daily Habit Tracking** — Create habits and mark them complete with a single click.
+* **Streak Tracking** — Track current and longest streaks for your habits.
+* **Calendar View** — Visualize completion history on a monthly calendar.
+* **Planned Absences** — Skip planned days without negatively affecting streak calculations.
+* **Analytics Dashboard** — View overall habit statistics and completion trends.
+* **Weekly Analytics** — See completion activity across the last 7 days.
+* **30-Day Trends** — Analyze completion activity over the last 30 days.
+* **Local SQLite Storage** — Store habit and completion data in a lightweight SQLite database.
+* **REST API** — FastAPI backend with automatically generated API documentation.
+* **Responsive UI** — React and Tailwind CSS interface designed for desktop and mobile screens.
 
-## Quick Start
+## Analytics Dashboard
 
-### 1. Clone and Setup Backend
+The analytics dashboard provides an overview of habit performance, including:
+
+* Total habits
+* Habits completed today
+* Overall completion rate
+* Current longest streak
+* Best streak
+* Total completions
+* Weekly completion chart
+* 30-day completion trend
+
+## Tech Stack
+
+| Layer              | Technology      |
+| ------------------ | --------------- |
+| Frontend           | React 18, Vite  |
+| Styling            | Tailwind CSS    |
+| Data Fetching      | TanStack Query  |
+| Charts             | Recharts        |
+| Routing            | React Router    |
+| Backend            | Python, FastAPI |
+| ORM                | SQLAlchemy      |
+| Database           | SQLite          |
+| Validation         | Pydantic        |
+| Testing            | Pytest, HTTPX   |
+| Package Management | uv, npm         |
+
+## Architecture
+
+```text
+┌──────────────────────┐
+│     React + Vite     │
+│      Frontend        │
+│      Port 5173       │
+└──────────┬───────────┘
+           │
+        HTTP/JSON
+           │
+           ▼
+┌──────────────────────┐
+│       FastAPI        │
+│       Backend        │
+│      Port 8000       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│       SQLite         │
+│      habits.db       │
+└──────────────────────┘
+```
+
+## Project Structure
+
+```text
+habit-tracker/
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── database.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   └── routers/
+│   │       ├── habits.py
+│   │       ├── completions.py
+│   │       └── analytics.py
+│   └── tests/
+│       ├── test_api_habits.py
+│       ├── test_api_completions.py
+│       ├── test_api_analytics.py
+│       └── test_streak.py
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── features/
+│   │   │   ├── habits/
+│   │   │   ├── calendar/
+│   │   │   └── analytics/
+│   │   ├── pages/
+│   │   └── lib/
+│   └── package.json
+│
+├── .gitignore
+└── README.md
+```
+
+## API
+
+### Habits
+
+| Method | Endpoint           | Description                 |
+| ------ | ------------------ | --------------------------- |
+| GET    | `/api/habits`      | List habits with statistics |
+| POST   | `/api/habits`      | Create a habit              |
+| PUT    | `/api/habits/{id}` | Update a habit              |
+| DELETE | `/api/habits/{id}` | Delete/archive a habit      |
+
+### Completions
+
+| Method | Endpoint                              | Description            |
+| ------ | ------------------------------------- | ---------------------- |
+| POST   | `/api/habits/{id}/complete`           | Mark a habit complete  |
+| DELETE | `/api/habits/{id}/completions/{date}` | Remove a completion    |
+| GET    | `/api/habits/{id}/completions`        | Get completion history |
+
+### Analytics
+
+| Method | Endpoint         | Description                    |
+| ------ | ---------------- | ------------------------------ |
+| GET    | `/api/analytics` | Get aggregated habit analytics |
+
+### Health
+
+| Method | Endpoint  | Description      |
+| ------ | --------- | ---------------- |
+| GET    | `/health` | API health check |
+
+Interactive API documentation is available through FastAPI at:
+
+```text
+http://localhost:8000/docs
+```
+
+## Getting Started
+
+### Prerequisites
+
+* Python 3.11+
+* [uv](https://docs.astral.sh/uv/)
+* Node.js 18+
+* npm
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Shwetanjsrey/habit-tracker.git
+cd habit-tracker
+```
+
+### 2. Start the backend
 
 ```bash
 cd backend
@@ -20,9 +167,21 @@ uv sync
 uv run uvicorn app.main:app --reload --port 8000
 ```
 
-Backend runs at http://localhost:8000 (API docs at http://localhost:8000/docs)
+The backend will be available at:
 
-### 2. Setup Frontend (new terminal)
+```text
+http://localhost:8000
+```
+
+API documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+### 3. Start the frontend
+
+Open another terminal:
 
 ```bash
 cd frontend
@@ -30,111 +189,51 @@ npm install
 npm run dev
 ```
 
-Frontend runs at http://localhost:5173
+The frontend will be available at:
 
-### 3. Open the App
-
-Navigate to **http://localhost:5173** in your browser. Create your first habit and start tracking!
-
-## Architecture
-
-```
-┌─────────────────┐     HTTP/JSON      ┌─────────────────┐
-│  React + Vite   │ ◄───────────────► │    FastAPI      │
-│   Port 5173     │                    │   Port 8000     │
-└─────────────────┘                    └────────┬────────┘
-                                                │
-                                       ┌─────────────────┐
-                                       │     SQLite      │
-                                       │   habits.db     │
-                                       └─────────────────┘
+```text
+http://localhost:5173
 ```
 
-### Tech Stack
+## Testing
 
-| Layer | Technology |
-|-------|------------|
-| Backend | Python 3.11, FastAPI, SQLAlchemy, SQLite |
-| Frontend | React 18, Vite, TanStack Query, Tailwind CSS |
-| Date Handling | date-fns |
+Backend tests can be run with:
 
-### Project Structure
-
-```
-habit-tracker/
-├── backend/
-│   ├── app/
-│   │   ├── main.py           # FastAPI entry point
-│   │   ├── database.py       # SQLite connection
-│   │   ├── models.py         # SQLAlchemy models (Habit, Completion)
-│   │   ├── schemas.py        # Pydantic request/response schemas
-│   │   └── routers/          # API endpoints
-│   │       ├── habits.py     # CRUD + streak calculation
-│   │       └── completions.py
-│   └── tests/                # pytest tests
-├── frontend/
-│   ├── src/
-│   │   ├── features/
-│   │   │   ├── habits/       # Habit components, hooks, API
-│   │   │   └── calendar/     # Calendar view components
-│   │   ├── components/ui/    # Shared UI components
-│   │   ├── pages/            # Route pages
-│   │   └── lib/              # Utilities
-│   └── package.json
-└── README.md
+```bash
+cd backend
+uv run pytest
 ```
 
-## Features
+Run with coverage:
 
-- **Daily Habit Tracking** — Create habits, mark them complete with one click
-- **Streak Tracking** — See current streak and completion rate per habit
-- **Calendar View** — Monthly grid showing completion history with color-coded days
-- **Planned Absences** — Skip days without breaking your streak
-- **Local & Private** — All data stored locally in SQLite, no account needed
+```bash
+uv run pytest --cov=app
+```
 
-## API Endpoints
+## Development
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/habits` | List all habits with stats |
-| POST | `/api/habits` | Create a new habit |
-| POST | `/api/habits/{id}/complete` | Mark habit complete for a date |
-| DELETE | `/api/habits/{id}/completions/{date}` | Undo a completion |
-| GET | `/api/habits/{id}/completions` | Get completion history |
+Frontend build:
 
-Full API documentation available at http://localhost:8000/docs when backend is running.
+```bash
+cd frontend
+npm run build
+```
 
-## Claude Commands
+Frontend linting:
 
-Slash commands for Claude Code to assist with development workflows. The AI coding workflow used to build this application follows the PIV (Prime, Implement, Validate) loop shown below:
+```bash
+npm run lint
+```
 
-![PIV Loop Diagram](PIVLoopDiagram.png)
+## Future Improvements
 
-### Planning & Execution
-| Command | Description |
-|---------|-------------|
-| `/core_piv_loop:prime` | Load project context and codebase understanding |
-| `/core_piv_loop:plan-feature` | Create comprehensive implementation plan with codebase analysis |
-| `/core_piv_loop:execute` | Execute an implementation plan step-by-step |
+* User authentication and multi-user support
+* Persistent production database
+* Habit categories and filtering
+* Notifications and reminders
+* Data export/import
+* More detailed progress visualizations
 
-### Validation
-| Command | Description |
-|---------|-------------|
-| `/validation:validate` | Run full validation: tests, linting, coverage, frontend build |
-| `/validation:code-review` | Technical code review on changed files |
-| `/validation:code-review-fix` | Fix issues found in code review |
-| `/validation:execution-report` | Generate report after implementing a feature |
-| `/validation:system-review` | Analyze implementation vs plan for process improvements |
+## License
 
-### Bug Fixing
-| Command | Description |
-|---------|-------------|
-| `/github_bug_fix:rca` | Create root cause analysis document for a GitHub issue |
-| `/github_bug_fix:implement-fix` | Implement fix based on RCA document |
-
-### Misc
-| Command | Description |
-|---------|-------------|
-| `/commit` | Create atomic commit with appropriate tag (feat, fix, docs, etc.) |
-| `/init-project` | Install dependencies, start backend and frontend servers |
-| `/create-prd` | Generate Product Requirements Document from conversation |
+This project is available for educational and portfolio use.
