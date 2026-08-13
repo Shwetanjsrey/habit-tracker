@@ -1,0 +1,11 @@
+.playwright-mcp
+.env
+.venv
+node_modules
+.pytest_cache
+.ruff_cache
+.vscode
+__pycache__
+# SQLite temporary files
+*.db-shm
+*.db-wal
