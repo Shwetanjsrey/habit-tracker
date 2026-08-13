@@ -9,3 +9,7 @@ __pycache__
 # SQLite temporary files
 *.db-shm
 *.db-wal
+
+# SQLite runtime files
+*.db-shm
+*.db-wal
